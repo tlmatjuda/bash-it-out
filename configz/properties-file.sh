@@ -80,6 +80,10 @@ function getProp() {
 
 # Used to modify a ".properties" file.
 # This function will add the key if it does not exist
+# Takes 3 Arguments :
+#     keyToAddOrModify  : The key that you want to modify the value for.
+#     valueToSet        : The value you want to update to, for that key.
+#     propFilePath      : Path of the file.
 # Usage : setProp this.assumed.key "withThisNewValue' /inside/this/config/file.properties
 function setProp() {
     keyToAddOrModify=$1
