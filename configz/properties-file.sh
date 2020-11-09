@@ -15,6 +15,8 @@
 PROPERITES_FILE_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 source $(dirname $PROPERITES_FILE_PATH)/utilz/logger-util.sh
 
+PROPERITES_FILE_SCRIPT_NAME="properties-file.sh"
+
 RESPONSE_TRUE=0
 RESPONSE_FALSE=1
 
@@ -53,10 +55,10 @@ function getProp() {
     propFilePath=$2
 
     if ! fileExists $propFilePath ; then
-        logError $CORE_DEV_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
+        logError $PROPERITES_FILE_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
         exit
     fi
-
+                          
     propToRead=$1
 
     # While we read each file line
@@ -92,18 +94,18 @@ function setProp() {
 
     # Check if the file is there first
     if ! fileExists $propFilePath ; then
-        logError $CORE_DEV_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
+        logError $PROPERITES_FILE_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
         exit
     fi
 
     # Check if the property exists in the file first
     # Using Regex to ignore the lines that have been commented out.
     if ! grep -R "^[#]*\s*${keyToAddOrModify}=.*" $propFilePath > /dev/null; then
-        logInfo $CORE_DEV_SCRIPT_NAME "Property '${keyToAddOrModify}' not found, so we are adding it in."
+        logInfo $PROPERITES_FILE_SCRIPT_NAME "Property '${keyToAddOrModify}' not found, so we are adding it in."
         echo "$keyToAddOrModify = $valueToSet" >> $propFilePath
     else
     # Handling a case where we have found out that the config exists so now it's a matter of editing its value
-        logInfo $CORE_DEV_SCRIPT_NAME "Updating the property '${keyToAddOrModify}' in the file."
+        logInfo $PROPERITES_FILE_SCRIPT_NAME "Updating the property '${keyToAddOrModify}' in the file."
         sed -ir "s/^[#]*\s*${keyToAddOrModify}=.*/$keyToAddOrModify=$valueToSet/" $propFilePath
     fi
 }
