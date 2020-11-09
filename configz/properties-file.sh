@@ -48,9 +48,10 @@ function trimText() {
 }
 
 # Used to extract the value of a specified key with the intention of reading from a ".properties" file.
-# Usage : readPropFromFile this.property.key /from/this/file/here.properties
+# Usage : getProp this.property.key /from/this/file/here.properties
 function getProp() {
     propFilePath=$2
+
     if ! fileExists $propFilePath ; then
         logError $CORE_DEV_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
         exit
@@ -79,7 +80,7 @@ function getProp() {
 
 # Used to modify a ".properties" file.
 # This function will add the key if it does not exist
-# Usage : setOrAddPropertyToFile this.assumed.key "withThisNewValue' /inside/this/config/file.properties
+# Usage : setProp this.assumed.key "withThisNewValue' /inside/this/config/file.properties
 function setProp() {
     keyToAddOrModify=$1
     valueToSet=$2
@@ -92,11 +93,12 @@ function setProp() {
     fi
 
     # Check if the property exists in the file first
+    # Using Regex to ignore the lines that have been commented out.
     if ! grep -R "^[#]*\s*${keyToAddOrModify}=.*" $propFilePath > /dev/null; then
         logInfo $CORE_DEV_SCRIPT_NAME "Property '${keyToAddOrModify}' not found, so we are adding it in."
-        echo "$keyToAddOrModify=$valueToSet" >> $propFilePath
+        echo "$keyToAddOrModify = $valueToSet" >> $propFilePath
     else
-    # Check if the property exists in the file first
+    # Handling a case where we have found out that the config exists so now it's a matter of editing its value
         logInfo $CORE_DEV_SCRIPT_NAME "Updating the property '${keyToAddOrModify}' in the file."
         sed -ir "s/^[#]*\s*${keyToAddOrModify}=.*/$keyToAddOrModify=$valueToSet/" $propFilePath
     fi
