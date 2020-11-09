@@ -25,16 +25,6 @@ RESPONSE_FALSE=1
 # FUNCTIONS & OPS
 # ======================================================================================================================
 
-# Checks if the specified file exists.
-# Usage : fileExists /path/to/the/file/here.properties
-function fileExists() {
-    fileToValidate=$1
-    if [ -f "$fileToValidate" ]; then
-      return $RESPONSE_TRUE
-    else
-      return $RESPONSE_FALSE
-    fi
-}
 
 # Used to trim some String values / Text
 function trimText() {
@@ -52,14 +42,8 @@ function trimText() {
 # Used to extract the value of a specified key with the intention of reading from a ".properties" file.
 # Usage : getProp this.property.key /from/this/file/here.properties
 function getProp() {
-    propFilePath=$2
-
-    if ! fileExists $propFilePath ; then
-        logError $PROPERITES_FILE_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
-        exit
-    fi
-                          
     propToRead=$1
+    propFilePath=$2
 
     # While we read each file line
     while read -r lineItem;
@@ -80,6 +64,7 @@ function getProp() {
 
 }
 
+
 # Used to modify a ".properties" file.
 # This function will add the key if it does not exist
 # Takes 3 Arguments :
@@ -92,20 +77,15 @@ function setProp() {
     valueToSet=$2
     propFilePath=$3
 
-    # Check if the file is there first
-    if ! fileExists $propFilePath ; then
-        logError $PROPERITES_FILE_SCRIPT_NAME "The specified [ properties ] file path : $propFilePath does not exist."
-        exit
-    fi
-
     # Check if the property exists in the file first
     # Using Regex to ignore the lines that have been commented out.
-    if ! grep -R "^[#]*\s*${keyToAddOrModify}=.*" $propFilePath > /dev/null; then
+    if ! grep -R "^[#]*\s*${keyToAddOrModify} = .*" $propFilePath > /dev/null; then
         logInfo $PROPERITES_FILE_SCRIPT_NAME "Property '${keyToAddOrModify}' not found, so we are adding it in."
         echo "$keyToAddOrModify = $valueToSet" >> $propFilePath
     else
     # Handling a case where we have found out that the config exists so now it's a matter of editing its value
-        logInfo $PROPERITES_FILE_SCRIPT_NAME "Updating the property '${keyToAddOrModify}' in the file."
-        sed -ir "s/^[#]*\s*${keyToAddOrModify}=.*/$keyToAddOrModify=$valueToSet/" $propFilePath
+        logInfo $PROPERITES_FILE_SCRIPT_NAME "Updating the property KEY : '${keyToAddOrModify}' and setting it to VALUE ${valueToSet}: in the file."
+        sed -ir "s/^[#]*\s*${keyToAddOrModify} = .*/$keyToAddOrModify = $valueToSet/" $propFilePath
     fi
 }
+
