@@ -61,7 +61,6 @@ function getProp() {
             echo $(trimText $configVal)
         fi
     done < "$propFilePath"  # The file we are reading each line from
-
 }
 
 
